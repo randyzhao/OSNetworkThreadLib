@@ -9,10 +9,12 @@ function initWorkers() {
         global.workers[i].status = 'idle';
     }
     console.log(workers);
+    global.variables = {};
+    global.locks = {};
 }
 
-app.use(bp.urlencoded({ entended: true }));
 app.use(bp.json());
+app.use(bp.urlencoded({extended: true}));
 
 var port = process.env.PORT || 55555;
 
