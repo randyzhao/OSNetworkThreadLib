@@ -87,10 +87,7 @@ function handleUnlock(req, res) {
         lock.waiting.shift();
         var url = 'http://' + client + '/get_lock?name=' + name;
         console.log(url);
-        request({
-            url: url,
-            method: 'GET',
-        }, function(err, res, body) {
+        request(url, function(err, res, body) {
             console.log("get_lock returned");
             if (err) {
                 console.error(err);
