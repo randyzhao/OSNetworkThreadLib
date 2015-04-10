@@ -1,11 +1,19 @@
 package com.duke.nthread;
 
+import java.io.IOException;
+
 public interface ThreadServer {
+
+	public void createThread(Function func) throws IOException;
+
+	public int get(String key) throws IOException;
+
+	public void set(String key, int val) throws IOException;
 	
-	public void createThread(Function func);
+	public void lock(String name, int port) throws IOException;
 	
-	public int get(String key);
+	public void unLock(String name) throws IOException;
 	
-	public void set(String key, int val);
+	public Object getWaitingLock(String name);
 
 }
