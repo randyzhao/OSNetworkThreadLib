@@ -65,6 +65,10 @@ function handleLock(req, res) {
         if (lock.status != 'locked') {
             res.status(200).send();
         } else {
+            var ip = req.ip;
+            if (ip.substring(0, 7) == '::ffff:') {
+                ip = ip.substring(7);
+            }
             lock.waiting.push(
                 String(req.ip) + 
                 ':' +
