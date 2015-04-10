@@ -70,7 +70,7 @@ function handleLock(req, res) {
                 ip = ip.substring(7);
             }
             lock.waiting.push(
-                String(req.ip) + 
+                String(ip) + 
                 ':' +
                 String(req.query.port)
             );
