@@ -1,18 +1,27 @@
 package com.duke.nthread;
 
-import java.io.Serializable;
+public abstract class Function implements Runnable {
 
-public abstract class Function implements Runnable, Serializable {
-	
-	private static final long serialVersionUID = 1L;
-	
 	protected ThreadServer ts;
 	protected int param;
-	
+	protected int port;
+
 	public void setParam(int param) {
 		this.param = param;
 	}
 	
+	public int getParam() {
+		return param;
+	}
+	
+	public void setPort(int port) {
+		this.port = port;
+	}
+	
+	public int getPort() {
+		return port;
+	}
+
 	public void setThreadServer(ThreadServer ts) {
 		this.ts = ts;
 	}
