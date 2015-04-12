@@ -79,14 +79,47 @@ public class HttpThreadServer implements ThreadServer {
 		}
 		new Resty().json("http://" + addr + "/variable", put(content(jsonObj)));
 	}
+	
+	@Override
+	public void lockInit(String name) throws IOException {
+		semInit(name, 1);
+	}
 
 	@Override
 	public void lock(String name, int port) throws IOException {
+		semDown(name, 1, port);
+	}
+	
+	@Override
+	public void unLock(String name) throws IOException {
+		semUp(name, 1);
+	}
+	
+	@Override
+	public Object getWaitingLock(String name) {
+		synchronized (waitingLocks) {
+			return waitingLocks.get(name);
+		}
+	}
+
+	@Override
+	public void semInit(String name, int max) throws IOException {
+		new Resty().json("http://" + addr + "/sem_init?name=" + name + "&max=" + max);
+	}
+
+	@Override
+	public void semUp(String name, int value) throws IOException {
+		new Resty().json("http://" + addr + "/sem_up?name=" + name + "&value=" + value);
+	}
+
+	@Override
+	public void semDown(String name, int value, int port) throws IOException {
 		try {
-			new Resty().json("http://" + addr + "/lock?name=" + name + "&port=" + port);
+			new Resty().json("http://" + addr + "/sem_down?name=" + name + "&value=" + value
+					+ "&port=" + port);
 		} catch (IOException ioe) {
 			// need to wait
-			System.out.println("[lock()] waiting for lock: " + name + "," + port);
+			System.out.println("[semDown()] waiting for sem: " + name + "," + port);
 			if (ioe.getMessage().contains("404")) {
 				Object lock;
 				synchronized(waitingLocks) {
@@ -99,11 +132,12 @@ public class HttpThreadServer implements ThreadServer {
 				synchronized (lock) {
 					try {
 						lock.wait();
-						System.out.println("[lock()] wait return: " + name + "," + port);
+						System.out.println("[semDown()] wait return: " + name + "," + port);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
+				// leak the memory here
 //				synchronized (waitingLocks) {
 //					waitingLocks.remove(name);
 //				}
@@ -111,19 +145,6 @@ public class HttpThreadServer implements ThreadServer {
 				throw ioe;
 			}
 		}
-	}
-	
-	@Override
-	public Object getWaitingLock(String name) {
-		synchronized (waitingLocks) {
-			return waitingLocks.get(name);
-		}
-	}
-
-	@Override
-	public void unLock(String name) throws IOException {
-		System.out.println("[unlock()] unlock: " + name);
-		new Resty().json("http://" + addr + "/unlock?name=" + name);
 	}
 
 }

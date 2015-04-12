@@ -33,10 +33,41 @@ public class Worker {
 		server = HttpServer.create(new InetSocketAddress(port), 0);
 		server.createContext("/assign_thread", new ThreadHandler());
 		server.createContext("/get_lock", new GetLockHandler());
+		server.createContext("/get_sem", new GetSemHandler());
 		server.setExecutor(Executors.newCachedThreadPool());
 		server.start();
 	}
 	
+	class GetSemHandler implements HttpHandler {
+
+		@Override
+		public void handle(HttpExchange t) throws IOException {
+			System.out.println(t.getRequestMethod());
+			System.out.println(t.getRequestHeaders().values());
+			System.out.println(t.getRequestURI().getQuery());
+			
+			try {
+				String name = t.getRequestURI().getQuery().split("=")[1];
+				Object lock = ts.getWaitingLock(name);
+				System.out.println("[Worker] get sem: " + name);
+				synchronized (lock) {
+					lock.notify();
+				}
+			} catch (Throwable th) {
+				th.printStackTrace();
+				throw new IOException(th);
+			}
+			
+			String response = "Get sem done";
+			t.sendResponseHeaders(200, response.length());
+			OutputStream os = t.getResponseBody();
+			os.write(response.getBytes());
+			os.close();
+		}
+		
+	}
+	
+	@Deprecated
 	class GetLockHandler implements HttpHandler {
 
 		@Override
