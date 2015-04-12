@@ -11,10 +11,17 @@ function initWorkers() {
     console.log(workers);
     global.variables = {};
     global.locks = {};
+    global.sems = {}
+}
+
+var logger = function(req, res, next) {
+    console.log('request: ' + req.originalUrl);
+    next();
 }
 
 app.use(bp.json());
 app.use(bp.urlencoded({extended: true}));
+app.use(logger);
 
 var port = process.env.PORT || 55555;
 
