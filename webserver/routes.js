@@ -65,12 +65,16 @@ function handleLock(req, res) {
         if (lock.status != 'locked') {
             res.status(200).send();
         } else {
+            res.status(404).send();
+            var ip = req.ip;
+            if (ip.substring(0, 7) == '::ffff:') {
+                ip = ip.substring(7);
+            }
             lock.waiting.push(
-                String(req.ip) + 
+                String(ip) + 
                 ':' +
                 String(req.query.port)
             );
-            res.status(404).send();
         }
     }
     console.log(global.locks);
@@ -99,6 +103,79 @@ function handleUnlock(req, res) {
     console.log(global.locks);
 }
 
+function handleSemInit(req, res) {
+    var name = req.query.name;
+    var max = req.query.max;
+    if (global.sems.hasOwnProperty(name)) {
+        res.status(404).send();
+    } else {
+        res.status(200).send();
+        global.sems[name] = {
+            max: max,
+            value: max,
+            waiting: []
+        };
+    }
+    console.log(global.sems);
+}
+
+function handleSemUp(req, res) {
+    var name = req.query.name;
+    var value = req.query.value;
+    var sem = global.sems[name];
+    if (global.sems.hasOwnProperty(name)) {
+        res.status(200).send();
+        sem.value += value;
+        sem.value = Math.min(sem.value, sem.max);
+        if (sem.waiting.length != 0) {
+            var client = sem.waiting[0];
+            if (client.value <= sem.value) {
+                sem.value -= client.value;
+                sem.waiting.shift();
+                var url = 'http://' + client.addr + '/get_sem?name=' + name;
+                console.log(url);
+                request(url, function(err, res, body) {
+                    console.log("get_sem returned");
+                    if (err) {
+                        console.error(err);
+                    } else {
+                        console.log(body);
+                    }
+                });
+            }
+        }
+    } else {
+        res.status(404).send();
+    }
+    console.log(global.sems);
+}
+
+function handleSemDown(req, res) {
+    var name = req.query.name;
+    var value = req.query.value;
+    var port = req.query.port;
+    if (!global.sems.hasOwnProperty(name)) {
+        return res.status(404).send();
+    }
+
+    var sem = global.sems[name];
+    if (sem.value - value < 0) {
+        res.status(404).send();
+        var ip = req.ip;
+        if (ip.substring(0, 7) == '::ffff:') {
+            ip = ip.substring(7);
+        }
+        sem.waiting.push({
+            addr: String(ip) + ':' + String(port),
+            value: value
+        });
+    } else {
+        res.status(200).send();
+        sem.value -= value;
+    }
+    console.log(global.sems);
+}
+
 module.exports = function(app) {
     app.get('/', function(req, res) {
         res.json({ message: 'lalala'});
@@ -109,4 +186,7 @@ module.exports = function(app) {
     app.get('/variable', handleGet);
     app.get('/lock', handleLock);
     app.get('/unlock', handleUnlock);
+    app.get('/sem_init', handleSemInit);
+    app.get('/sem_up', handleSemUp);
+    app.get('/sem_down', handleSemDown);
 };
