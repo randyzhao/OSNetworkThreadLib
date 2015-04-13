@@ -22,16 +22,16 @@ public class Test {
 //		HttpThreadServer hts = new HttpThreadServer("192.168.0.1:8080");
 //		hts.createThread(new MyFunction());
 		
-//		HttpThreadServer hts = new HttpThreadServer("127.0.0.1:55555");
-		HttpThreadServer hts = new HttpThreadServer("152.3.136.156:55555");
+		HttpThreadServer hts = new HttpThreadServer("127.0.0.1:55555");
+//		HttpThreadServer hts = new HttpThreadServer("152.3.136.156:55555");
 		Worker worker1 = new Worker(hts, 55556);
 		Worker worker2 = new Worker(hts, 55557);
 		Worker worker3 = new Worker(hts, 55558);
 		Worker worker4 = new Worker(hts, 55559);
-		Worker worker5 = new Worker(hts, 55560);
-		Worker worker6 = new Worker(hts, 55561);
-		Worker worker7 = new Worker(hts, 55562);
-		Worker worker8 = new Worker(hts, 55563);
+		Worker worker5 = new Worker(hts, 55550);
+		Worker worker6 = new Worker(hts, 55551);
+		Worker worker7 = new Worker(hts, 55552);
+		Worker worker8 = new Worker(hts, 55553);
 		worker1.start();
 		worker2.start();
 		worker3.start();
@@ -123,5 +123,6 @@ public class Test {
 		}
 		
 	}
+	
 
 }

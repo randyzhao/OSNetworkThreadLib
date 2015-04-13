@@ -1,17 +1,41 @@
 {
     "workers": [
         {
-            "ip": "10.190.95.144",
-            "port": 55555
+            "ip": "localhost",
+            "port": 55551
         },
         {
-            "ip": "10.190.95.144",
+            "ip": "localhost",
+            "port": 55552
+        },
+        {
+            "ip": "localhost",
+            "port": 55553
+        },
+
+
+        {
+            "ip": "localhost",
+            "port": 55550
+        },
+        {
+            "ip": "localhost",
             "port": 55556
         },
         {
-            "ip": "10.190.95.144",
+            "ip": "localhost",
             "port": 55557
-        }
+        },
 
+        {
+            "ip": "localhost",
+            "port": 55558
+        },
+        {
+            "ip": "localhost",
+            "port": 55559
+        }
+        
     ]
 }
+
