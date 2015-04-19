@@ -51,7 +51,7 @@ public class ProdCon {
 		
 	}
 
-	static int totalnum = 50;
+	static int totalnum = 500;
 	
 	public static class Consumer extends Function {
 
