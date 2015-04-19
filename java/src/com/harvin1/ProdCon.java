@@ -59,6 +59,8 @@ public class ProdCon {
 
 		@Override
 		public void run() {
+			long cstartTime = System.nanoTime();
+			
 			for (int i = 0; i < totalnum; i++) {
 				// super.run();
 				try {
@@ -68,6 +70,11 @@ public class ProdCon {
 				}
 			}
 
+			long cendTime = System.nanoTime();
+			long ctotalTime = cendTime-cstartTime;
+			
+			System.out.println("Total Time of consumer cost is "+ctotalTime+" ns.");
+			
 		}
 
 		private synchronized void consume() {
@@ -100,10 +107,17 @@ public class ProdCon {
 	public static class Producer extends Function {
 		@Override
 		public void run() {
+			long pstartTime = System.nanoTime();
+			
 			for (int i = 0; i < totalnum; i++) {
 				// super.run();
 				produce();
 			}
+			long pendTime = System.nanoTime();
+			long ptotalTime = pendTime-pstartTime;
+			
+			System.out.println("Total Time of producer cost is "+ptotalTime+" ns.");
+			
 		}
 
 		private synchronized void produce() {
