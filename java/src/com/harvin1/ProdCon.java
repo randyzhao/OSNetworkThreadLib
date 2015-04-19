@@ -26,7 +26,7 @@ public class ProdCon {
 		// Producer prod = new Producer();
 		// Consumer con1 = new Consumer(1);
 		// Consumer con2 = new Consumer(2);
-		HttpThreadServer hts = new HttpThreadServer("127.0.0.1:55555");
+		HttpThreadServer hts = new HttpThreadServer("152.3.136.156:55555");
 		Worker prod = new Worker(hts, 55551);
 		Worker con1 = new Worker(hts, 55552);
 		Worker con2 = new Worker(hts, 55553);
@@ -51,7 +51,7 @@ public class ProdCon {
 		
 	}
 
-	static int totalnum = 500;
+	static int totalnum = 50;
 	
 	public static class Consumer extends Function {
 
@@ -59,6 +59,7 @@ public class ProdCon {
 
 		@Override
 		public void run() {
+			
 			for (int i = 0; i < totalnum; i++) {
 				// super.run();
 				try {
@@ -67,12 +68,12 @@ public class ProdCon {
 					System.out.println("Consumer: I can't consume :(");
 				}
 			}
-
+			
 		}
 
 		private synchronized void consume() {
 			Good g = null;
-
+			long cstartTime = System.nanoTime();
 			try {
 				// ProdCon.full.acquire();
 				// ProdCon.mutex.acquire();
@@ -94,19 +95,29 @@ public class ProdCon {
 			}
 
 			System.out.println("Consumer: I consumed " + g.id);
+
+			long cendTime = System.nanoTime();
+			long ctotalTime = cendTime - cstartTime;
+
+			System.out.println("Total Time of each consume is " + ctotalTime + " ns.");
 		}
 	}
 
 	public static class Producer extends Function {
 		@Override
 		public void run() {
+			
+			
 			for (int i = 0; i < totalnum; i++) {
 				// super.run();
 				produce();
 			}
+
 		}
 
 		private synchronized void produce() {
+			long pstartTime = System.nanoTime();
+			
 			Good g = new Good();
 			System.out.println("Producer: I made " + g.id);
 
@@ -128,6 +139,10 @@ public class ProdCon {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			long pendTime = System.nanoTime();
+			long ptotalTime = pendTime-pstartTime;
+			
+			System.out.println("Total Time of each produce is "+ptotalTime+" ns.");
 
 		}
 	}
